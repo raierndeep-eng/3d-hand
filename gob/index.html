@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>GOB</title>
+<meta name="description" content="GOB — a small grey cube, a yellow friend, and a very quiet world.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": { "three": "./lib/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- Post FX overlays (vignette, grain, tint) -->
+<div id="fx-vignette"></div>
+<canvas id="fx-grain" width="256" height="256"></canvas>
+<div id="fx-tint"></div>
+<div id="fx-fade"></div>
+
+<!-- Letterbox for cutscenes -->
+<div id="letterbox"><div class="bar top"></div><div class="bar bottom"></div></div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="objective" class="hidden"><div class="obj-label">OBJECTIVE</div><div id="obj-text"></div><div id="obj-progress"></div></div>
+  <div id="chat"></div>
+  <div id="counter" class="hidden"><span class="icon">▣</span> <span id="counter-text">0</span></div>
+  <div id="prompt" class="hidden"><span class="key">E</span> <span id="prompt-text"></span></div>
+  <div id="toast-area"></div>
+  <div id="caption" class="hidden"></div>
+  <div id="bigcount" class="hidden"></div>
+  <div id="fps" class="hidden"></div>
+  <div id="players-online" class="hidden">Players online: <b id="po-count">0</b></div>
+</div>
+
+<!-- Chapter title card -->
+<div id="titlecard" class="hidden"><div class="tc-num"></div><div class="tc-title"></div><div class="tc-sub"></div></div>
+
+<!-- Dialogue -->
+<div id="dialogue" class="hidden">
+  <div id="dlg-name"></div>
+  <div id="dlg-text"></div>
+  <div id="dlg-choices"></div>
+  <div id="dlg-next">▼</div>
+</div>
+
+<!-- Touch controls -->
+<div id="touch" class="hidden">
+  <div id="joy"><div id="joy-knob"></div></div>
+  <button id="t-jump" class="tbtn">JUMP</button>
+  <button id="t-use" class="tbtn">USE</button>
+  <button id="t-pause" class="tbtn small">II</button>
+</div>
+
+<!-- Menus root -->
+<div id="menus"></div>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="ld-cube"><div class="ld-eye l"></div><div class="ld-eye r"></div></div>
+  <div id="ld-title">LOADING</div>
+  <div id="ld-bar"><div id="ld-fill"></div></div>
+  <div id="ld-tip"></div>
+</div>
+
+<!-- Fatal errors -->
+<div id="error" class="hidden">
+  <h2>Something broke.</h2>
+  <p id="error-msg"></p>
+  <div class="err-btns"><button id="err-menu">Return to title</button><button id="err-reload">Reload</button></div>
+</div>
+
+<noscript><div class="noscript">GOB needs JavaScript enabled.</div></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
