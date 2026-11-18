@@ -307,7 +307,9 @@ export default class Chapter5 extends ChapterBase {
 
   spawnHallBlock(hall) {
     if (this.hallSpawned) return; this.hallSpawned = true;
-    this.collectAll([{ ...hall }], () => this.yellowBlock(), { sound: 'collect', total: 1 }).then(() => {
+    const pr = this.collectAll([{ ...hall }], () => this.yellowBlock(), { sound: 'collect', total: 1 });
+    this.progress(`${(this.flags.blocks || []).length}/5`);
+    pr.then(() => {
       const got = new Set(this.flags.blocks || []); got.add('hall'); this.flags.blocks = [...got];
       this.objective('Find yellow blocks', `${got.size}/5`);
       this.hallRes && this.hallRes();
@@ -383,13 +385,11 @@ export default class Chapter5 extends ChapterBase {
     const g = this.game, k = g.kalo;
     k.follow();
     this.objective('Go home (north hallway)');
-    this.mark([0, 0, -20], 2);
-    await this.reach([0, 0, -18], 3, { marker: false });
-    this.unmark();
+    await this.reach([0, 0, -18], 3);
     await this.say(['G: kalo, guess what. the fair still works. we can go on the wheel again.', 'C: the wheel again.', 'G: and the obby! you can take the stairs.', 'C: take the stairs.']);
-    await this.reach([0, 0, -45], 3, { marker: false });
+    await this.reach([0, 0, -45], 3);
     await this.say(['G: ...', 'G: tag! you’re it!', 'C: tag. you’re it.', 'N: The copy doesn’t move.', 'G: you’re supposed to run. kalo runs away and then lets me catch him.', 'C: lets me catch him.']);
-    await this.reach([0, 0, -80], 3, { marker: false });
+    await this.reach([0, 0, -80], 3);
     this.chat('Kalo: gobby', 'kalo-chat');
     await this.wait(1.5);
     this.chat('Kalo: gobby', 'kalo-chat');

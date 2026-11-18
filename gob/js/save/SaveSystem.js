@@ -45,7 +45,7 @@ export class SaveSystem {
 
 export const DEFAULT_SETTINGS = {
   master: 0.8, music: 0.7, sfx: 0.8,
-  mouseSens: 1, invertY: false, fov: 62, quality: 'high', textSpeed: 1, showFps: false,
+  mouseSens: 1, invertY: false, fov: 62, quality: (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ? 'medium' : 'high', textSpeed: 1, showFps: false,
   screenShake: true, autoCamera: true, camDistance: 7,
 };
 

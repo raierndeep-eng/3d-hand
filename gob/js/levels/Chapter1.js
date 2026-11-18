@@ -23,7 +23,44 @@ export default class Chapter1 extends ChapterBase {
     // quack at the ducks any time
     this.game.interactions.add({ pos: () => this.H.ducks[0].position, label: 'Say hi to Mr. Duck', radius: 4, onUse: () => { this.sfx('quack'); this.gob.model.emote('happy', 0.8); } });
     this.game.interactions.add({ pos: v3([3.6, 1.2, -26.4]), label: 'Check the mailbox', radius: 2, onUse: () => this.say(['N: The mailbox is empty.', 'G: maybe tomorrow.']) });
+    // Optional: sit on the bench with Kalo
+    this.game.interactions.add({ pos: v3([-6, 0.5, 6]), label: 'Sit on the bench', radius: 2.4, onUse: () => this.benchTalk() });
+    this.slideState = 0;
     await progress(1);
+  }
+
+  async benchTalk() {
+    const k = this.kalo;
+    if (!k || !k.model.root.visible) { await this.say(['G: (a nice bench. for two people. i always sit on the left side, in case.)']); return; }
+    if (this.benchDone) { await this.say(['K: bench break again? ok fine. five more seconds.']); return; }
+    this.benchDone = true;
+    await this.say([
+      'K: oh nice. bench break.',
+      'K: hey gobby, can i ask you something?',
+      'G: okay.',
+      'K: why do you have a name tag? like, who’s it for?',
+      'G: ...for whoever comes.',
+      'K: and i came!',
+      'G: and you came.',
+      'K: so it worked!',
+      'G: ...',
+      'G: it worked.',
+    ]);
+  }
+
+  update(dt, t) {
+    super.update(dt, t);
+    // Optional: go down the slide while Kalo watches.
+    const p = this.gob.body.pos;
+    if (this.slideState === 0 && p.y > 3.4 && Math.abs(p.x - (GX - 3)) < 1.4 && Math.abs(p.z - GZ) < 1.4) { this.slideState = 1; this.slideT = 0; }
+    if (this.slideState === 1) {
+      this.slideT += dt;
+      if (p.y < 0.6 && p.x > GX + 1.5 && Math.abs(p.z - GZ) < 1.5) {
+        this.slideState = 2;
+        if (this.kalo && this.kalo.model.root.visible) { this.chat('Kalo: WOOOO GOBBY!!! 10/10', 'kalo-chat'); this.chat('Kalo: (i was watching. every time.)', 'kalo-chat'); this.gob.model.emote('happy', 1.2); }
+        else this.chat('...wheee.', 'server');
+      } else if (this.slideT > 5) this.slideState = 0;
+    }
   }
 
   memorySpots() {
@@ -37,6 +74,7 @@ export default class Chapter1 extends ChapterBase {
 
   showKalo(at) {
     const k = this.kalo; k.model.root.visible = true; k.active = true;
+    k.chatter = ['this grass is SO green', 'gobby ur so fast for a cube', 'i like it here', 'wait do the clouds move??', 'hiii mr duck (from far away)', 'r u ok? ur eyes are doing a thing', 'brb. jk. i would never', 'imagine if this place had 100 players. nah i like it like this', 'lol ur name tag is crooked. jk its perfect'];
     if (at) k.teleport(at[0], null, at[1]);
     this.H.onlineBoard(1); this.game.hud.playersOnline(1);
   }

@@ -129,6 +129,13 @@ export class Game {
   async boot() {
     this.loading.show('WAKING UP');
     this.loading.progress(0.2);
+    // Canvas text needs the web fonts loaded first (falls back after a short timeout, e.g. offline).
+    try {
+      await Promise.race([
+        Promise.all(['700 48px Fredoka', '700 48px VT323', '400 48px VT323'].map((f) => document.fonts.load(f))),
+        new Promise((r) => setTimeout(r, 2500)),
+      ]);
+    } catch (e) { /* fonts are optional */ }
     // Warm up the procedural textures used everywhere.
     T.gobFace(); T.iris(); T.eyeWhite(3); T.eyeWhite(8); T.studs('#5aa845');
     await nextFrame();

@@ -92,6 +92,7 @@ export class PlayerController {
     this.model.update(dt, { speed, grounded: b.onGround, vy: b.vel.y, landed: b.justLanded ? b.landedSpeed : 0 });
 
     if (this.carry) {
+      if (this.carry.isSprite) this.carry.scale.set(1.6, 0.4, 1);
       const t = performance.now() * 0.001;
       const side = this.yaw + Math.PI * 0.75;
       const tx = b.pos.x + Math.sin(side) * 0.9, tz = b.pos.z + Math.cos(side) * 0.9, ty = b.pos.y + 2.0 + Math.sin(t * 1.5) * 0.12;

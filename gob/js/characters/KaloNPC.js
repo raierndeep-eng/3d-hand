@@ -26,6 +26,7 @@ export class KaloNPC {
     this.jumpCooldown = 0;
     this.footT = 0;
     this.physics = true;
+    this.chatter = null; this.chatT = 18; this.lastChat = -1;
   }
 
   get pos() { return this.body.pos; }
@@ -121,6 +122,16 @@ export class KaloNPC {
       if (this.footT <= 0) { this.footT = 2.2; game.sfx.play('kaloStep', { pos: b.pos, vol: 0.35 }); }
     }
 
+    // Idle chatter in the Roblox chat while following GOB around.
+    if (this.chatter && this.mode === 'follow' && game.player.controllable && this.model.root.visible) {
+      this.chatT -= dt;
+      if (this.chatT <= 0) {
+        let i = Math.floor(Math.random() * this.chatter.length);
+        if (i === this.lastChat) i = (i + 1) % this.chatter.length;
+        this.lastChat = i; this.chatT = 22 + Math.random() * 20;
+        game.hud.chatMsg('Kalo: ' + this.chatter[i], 'kalo-chat');
+      }
+    }
     this.yaw = dampAngle(this.yaw, this.targetYaw, 10, dt);
     const m = this.model;
     m.root.position.copy(b.pos); m.root.rotation.y = this.yaw;

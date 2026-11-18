@@ -118,7 +118,62 @@ export default class Chapter2 extends ChapterBase {
     g.spawnKalo(); this.kalo.model.root.visible = false; this.kalo.active = false; this.kalo.teleport(SPAWN[0], 0.4, SPAWN[1]);
     this.gob.setPosition(SPAWN[0] + 4, null, SPAWN[1] + 1, -Math.PI / 2);
     g.hud.playersOnline(0);
+    this.kaloChatter = ['gobby u built ALL of this??', 'the music is stuck in my head forever now', 'i want cotton candy. can u eat? wait', 'this is the best server ive ever been on', 'race u to the wheel. jk i need tickets', 'ok the ducks were cool but THIS', 'my mom says hi. jk she doesnt know ur real. ur real tho'];
+    // Optional extras around the fair
+    g.interactions.add({ pos: v3([-28, 0.5, -8.6]), label: 'Get cotton candy', radius: 2.4, onUse: () => this.cottonCandy() });
+    g.interactions.add({ pos: v3([CAROUSEL[0] - 6.4, 0.5, CAROUSEL[1]]), label: 'Ride the carousel', radius: 2.6, onUse: () => this.carouselRide() });
     await progress(1);
+  }
+
+  async cottonCandy() {
+    const k = this.kalo;
+    if (!k || !k.model.root.visible) { await this.say(['N: The cotton candy machine is cold.']); return; }
+    if (this.candyDone) { await this.say(['K: no more. i am made of sugar now. i am the sugar.']); return; }
+    this.candyDone = true;
+    this.sfx('collect');
+    await this.say([
+      'N: GOB gets two cotton candies. One pink, one blue.',
+      'K: oh sick. thanks gobby.',
+      'K: ...wait. can you even eat?',
+      'G: no.',
+      'K: then why did you get two',
+      'G: one for you. and one for you.',
+      'K: ...',
+      'K: you’re so weird. thank you.',
+    ]);
+  }
+
+  async carouselRide() {
+    const k = this.kalo, g = this.game;
+    if (!this.powered.RIDES) { await this.say(['G: (it isn’t turned on.)']); return; }
+    if (!k || !k.model.root.visible) { await this.say(['G: (it’s not much fun alone.)']); return; }
+    await this.cutIn();
+    const h1 = this.horses[0], h2 = this.horses[1];
+    const wp = new THREE.Vector3(), wq = new THREE.Vector3();
+    k.physics = false; this.gob.body.enabled = false;
+    const ride = this.b.onUpdate(() => {
+      h1.updateWorldMatrix(true, false); wp.setFromMatrixPosition(h1.matrixWorld);
+      h2.updateWorldMatrix(true, false); wq.setFromMatrixPosition(h2.matrixWorld);
+      this.gob.body.pos.set(wp.x, wp.y + 0.35, wp.z); k.body.pos.set(wq.x, wq.y - 0.3, wq.z); k.pose('sit');
+      this.gob.yaw = this.carousel.rotation.y * -1 + Math.PI; k.yaw = k.targetYaw = this.gob.yaw;
+    });
+    const C = new THREE.Vector3(CAROUSEL[0], 2, CAROUSEL[1]);
+    g.cut.follow(() => C.clone().add(new THREE.Vector3(10, 4, 10)), () => C.clone(), 3);
+    await this.wait(1);
+    await this.say([
+      'K: ok this is the most normal thing we’ve done all day.',
+      'G: it’s my favourite ride.',
+      'K: you said nobody’s ridden anything.',
+      'G: it’s still my favourite. i’ve watched it go round a lot.',
+      'K: ...that’s kinda sad gobby',
+      'G: it’s not sad right now.',
+      'K: yeah. not right now.',
+    ]);
+    await this.wait(2);
+    this.b.updaters.splice(this.b.updaters.indexOf(ride), 1);
+    k.physics = true; k.pose(null); this.gob.body.enabled = true;
+    this.gob.setPosition(CAROUSEL[0] - 7.5, null, CAROUSEL[1], -Math.PI / 2); k.teleport(CAROUSEL[0] - 7.5, null, CAROUSEL[1] + 2);
+    this.cutOut();
   }
 
   tent(x, z, [a, c], s = 4) {
@@ -249,7 +304,7 @@ export default class Chapter2 extends ChapterBase {
   }
 
   restore(beat) {
-    if (beat >= 1) { this.kalo.model.root.visible = true; this.kalo.active = true; this.kalo.follow(); this.game.hud.playersOnline(1); }
+    if (beat >= 1) { this.kalo.model.root.visible = true; this.kalo.active = true; this.kalo.follow(); this.kalo.chatter = this.kaloChatter; this.game.hud.playersOnline(1); }
     if (beat >= 2) { for (const n of ['LIGHTS', 'MUSIC', 'RIDES']) this.setPower(n, true); }
     if (beat >= 5) this.mood('sunset', 0);
   }
@@ -314,6 +369,7 @@ export default class Chapter2 extends ChapterBase {
     }
     this.sfx('chime'); this.chat('Kalo joined the game.', 'sys'); g.hud.playersOnline(1);
     const k = this.kalo; k.model.root.visible = true; k.active = true; k.teleport(SPAWN[0], 3, SPAWN[1], Math.PI / 2);
+    k.chatter = this.kaloChatter;
     this.sfx('spawn'); g.fx.sparkle(new THREE.Vector3(SPAWN[0], 1.5, SPAWN[1]));
     this.objective(null);
     await this.cutIn();

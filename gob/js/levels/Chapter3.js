@@ -167,7 +167,7 @@ export default class Chapter3 extends ChapterBase {
   }
 
   restore(beat) {
-    if (beat >= 1) { this.openGate(true); this.kalo.model.root.visible = true; this.kalo.active = true; this.kalo.follow(); this.game.hud.playersOnline(1); }
+    if (beat >= 1) { this.openGate(true); this.kalo.model.root.visible = true; this.kalo.active = true; this.kalo.follow(); this.kalo.chatter = ['stay close ok', 'its so quiet here', 'u ok gobby?']; this.game.hud.playersOnline(1); }
     if (beat >= 4) { this.mood('storm', 0); this.game.fx.setRain(1); this.music('storm', 0.5); }
     if (beat >= 5) { for (const t of this.tiles) if (t.cz < -20) this.dropTile(t, true); }
   }
@@ -234,6 +234,7 @@ export default class Chapter3 extends ChapterBase {
     ]);
     this.cutOut();
     k.follow();
+    k.chatter = ['stay close ok', 'its so quiet here. like library quiet', 'i used to walk this road every day', 'dont step on the cracks lol', 'u ok gobby?', 'almost there. i think', 'this place used to have so many people'];
     this.objective('Open the gate');
     await this.use([0, 0.5, 1], 'Open the gate', 2.6);
     this.sfx('creak');
@@ -378,6 +379,7 @@ export default class Chapter3 extends ChapterBase {
     this.gob.setPosition(0, null, -144, 0); k.teleport(1.5, null, -142, 0);
     g.cameraCtl.setBehind(0); g.cameraCtl.snap();
     await this.game.fade(false, 0.4);
+    k.chatter = null;
     this.objective('RUN! Get back to the fence!');
     this.mark([0, 0, -6], 2);
     this.wave = -190; this.waveSpeed = 5.6; this.waveOn = true;
@@ -395,6 +397,7 @@ export default class Chapter3 extends ChapterBase {
   async death() {
     const g = this.game, k = this.kalo;
     this.waveOn = false; this.objective(null);
+    if (k) k.chatter = null;
     this.mood('storm', 0); g.fx.setRain(1); g.sfx.setAmbience({ wind: 1, rain: 1 });
     await this.cutIn();
     // positions
@@ -459,6 +462,7 @@ export default class Chapter3 extends ChapterBase {
     };
     const pieces = [...k.model.pieces];
     for (const pc of pieces) pc.obj.updateWorldMatrix(true, false);
+    this.game.marker.set(() => { const p = this.gob.body.pos; let best = null, bd = 1e9; for (const pc of pieces) { const q = new THREE.Vector3().setFromMatrixPosition(pc.obj.matrixWorld); const d = dist2(q.x, q.z, p.x, p.z); if (d < bd) { bd = d; best = q; } } return best || p; }, 1.2);
     while (pieces.length) {
       const idx = await this.useAny(pieces.map((pc) => ({ pos: new THREE.Vector3().setFromMatrixPosition(pc.obj.matrixWorld), label: '...', radius: 2.2 })));
       const pc = pieces.splice(idx, 1)[0];
@@ -467,6 +471,7 @@ export default class Chapter3 extends ChapterBase {
       await this.say(lines[pc.key] || ['G: ...']);
     }
     this.gob.model.emoteName = null;
+    this.unmark();
     this.objective(null);
     // Respawn countdown that never finishes
     await this.cutIn();

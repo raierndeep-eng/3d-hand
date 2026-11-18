@@ -92,7 +92,7 @@ export function buildSunnyPlate(ch, variant = 'happy') {
   b.sign(SP.spawn[0], SP.spawn[1] - 3.2, 'SPAWN', { w: 2.4, h: 0.8, post: 2.2, bg: '#dfe6f0', fg: '#4a5369', border: '#4a5369', collide: false });
   H.onlineBoard = (n) => {
     if (H._board) { b.group.remove(H._board); }
-    H._board = b.panel(5.2, 2.4, SP.spawn[1] - 1.5, `PLAYERS ONLINE\n${n}`, { ry: -0.5, w: 2.6, h: 1.4, bg: '#1d2230', fg: n > 0 ? '#7ed957' : '#ff6b6b', font: '700 64px VT323, monospace', emissive: true });
+    H._board = b.panel(5.2, 2.4, SP.spawn[1] - 1.5, `PLAYERS ONLINE\n${n}`, { ry: -0.5, w: 2.6, h: 1.4, bg: '#1d2230', fg: n > 0 ? '#7ed957' : '#ff6b6b', font: '700 54px VT323, monospace', emissive: true });
   };
   b.box({ x: 5.2, z: SP.spawn[1] - 1.5, w: 0.2, h: 1.7, d: 0.2, color: 0x333333, collide: false });
   H.onlineBoard(0);
